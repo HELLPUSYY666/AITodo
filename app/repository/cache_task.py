@@ -17,11 +17,10 @@ class TaskCacheRepository:
         return [TaskSchema.model_validate(task) for task in json.loads(tasks_json)]
 
     async def set_all_tasks(
-        self, tasks: List[TaskSchema], key: str = "all_tasks"
+        self, tasks: List[TaskSchema], key: str = "all_tasks", ex: int = 3600
     ) -> None:
-        await self.cache_session.set(
-            key, json.dumps([task.model_dump() for task in tasks])
-        )
+        tasks_data = [task.model_dump(mode="json") for task in tasks]
+        await self.cache_session.set(key, json.dumps(tasks_data), ex=ex)
 
     async def get_task(self, task_id: int) -> Optional[TaskSchema]:
         key = f"task:{task_id}"
@@ -30,9 +29,10 @@ class TaskCacheRepository:
             return None
         return TaskSchema.model_validate(json.loads(task_json))
 
-    async def set_task(self, task: TaskSchema, task_id: int) -> None:
+    async def set_task(self, task: TaskSchema, task_id: int, ex: int = 3600) -> None:
         key = f"task:{task_id}"
-        await self.cache_session.set(key, json.dumps(task.model_dump()))
+        task_data = task.model_dump(mode="json")
+        await self.cache_session.set(key, json.dumps(task_data), ex=ex)
 
     async def delete_task_cache(self, task_id: int) -> None:
         key = f"task:{task_id}"
