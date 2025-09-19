@@ -13,8 +13,6 @@ class BaseServiceSettings(BaseSettings):
 
     DEBUG: bool = False
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
-    GATEWAY_URL: str
-    DICTS_URL: str
 
     MAX_RETIRES: int = 5
     DEFAULT_BACKOFF: float = 5
@@ -30,6 +28,11 @@ class Settings(BaseServiceSettings):
     PG_PASSWORD: str
     PG_HOST: str
     PG_PORT: int
+
+    CACHE_HOST: str
+    CACHE_PORT: int
+    CACHE_DB: int
+    CACHE_PASSWORD: str
 
     @computed_field  # type: ignore[prop-decorator]
     @property

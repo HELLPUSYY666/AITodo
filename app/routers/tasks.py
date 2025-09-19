@@ -1,10 +1,10 @@
 from typing import Annotated
 
-from dependecy import get_request_user_id, get_task_service
-from exception import TaskNotFound
+from dependency import get_request_user_id, get_task_service
+from exceptions import NotFound
 from fastapi import APIRouter, Depends, HTTPException, status
-from schema.task import TaskCreateSchema, TaskSchema
-from service import TaskService
+from schemas.tasks import TaskCreateSchema, TaskSchema
+from services.task import TaskService
 
 router = APIRouter(prefix="/task", tags=["tasks"])
 
@@ -34,7 +34,7 @@ async def update_task(
 ):
     try:
         return await task_service.update_task_name(task_id, name, user_id)
-    except TaskNotFound as e:
+    except NotFound(model_name="Task", ident=task_id) as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
@@ -46,5 +46,5 @@ async def delete_task(
 ):
     try:
         await task_service.delete_task(task_id=task_id, user_id=user_id)
-    except TaskNotFound as e:
+    except NotFound(model_name="Task", ident=task_id) as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

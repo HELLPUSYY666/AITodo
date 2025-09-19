@@ -16,11 +16,12 @@ class TaskSchema(BaseModel):
     @classmethod
     def check_title_not_none(cls, values):
         if values.get("title") is None:
-            raise ValueError("Name cannot be None")
+            raise ValueError("Title cannot be None")
         return values
 
 
 class TaskCreateSchema(BaseModel):
-    name: str
-    pomodoro_count: int | None = None
-    category_id: int | None = None
+    title: str
+    description: int | None = None
+    priority: str
+    due_date: dt.date
