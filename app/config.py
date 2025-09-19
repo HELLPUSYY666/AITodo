@@ -7,8 +7,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class BaseServiceSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    APP_NAME: str
+    APP_HOST: str
+    APP_PORT: int
+
     DEBUG: bool = False
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    GATEWAY_URL: str
+    DICTS_URL: str
 
     MAX_RETIRES: int = 5
     DEFAULT_BACKOFF: float = 5
