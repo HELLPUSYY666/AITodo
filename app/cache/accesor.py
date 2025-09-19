@@ -1,7 +1,8 @@
 from typing import AsyncGenerator
 
 import redis.asyncio as redis
-from config import settings
+
+from app.config import settings
 
 
 async def get_redis_connection() -> redis.Redis:

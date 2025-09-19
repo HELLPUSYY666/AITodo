@@ -10,6 +10,8 @@ class BaseServiceSettings(BaseSettings):
     APP_NAME: str
     APP_HOST: str
     APP_PORT: int
+    JWT_SECRET_KEY: str
+    JWT_ENCODE_ALGORITHM: str
 
     DEBUG: bool = False
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"

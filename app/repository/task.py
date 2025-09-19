@@ -1,8 +1,9 @@
-from models.task import Task
-from schemas.tasks import TaskCreateSchema
 from sqlalchemy import delete, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.future import select
+
+from app.models.task import Task
+from app.schemas.tasks import TaskCreateSchema
 
 
 class TaskRepository:

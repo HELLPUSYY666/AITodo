@@ -1,14 +1,16 @@
-from exceptions import Unauthorized
 from fastapi import Depends, HTTPException, Security, security
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.cache.accesor import get_redis_connection
 from app.config import settings
 from app.db.connection import get_session
+from app.exceptions import Unauthorized
 from app.repository.cache_task import TaskCacheRepository
 from app.repository.task import TaskRepository
 from app.repository.user import UserRepository
+from app.services.auth import AuthService
 from app.services.task import TaskService
+from app.services.user import UserService
 
 
 async def get_task_repository(
