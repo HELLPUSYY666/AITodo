@@ -28,9 +28,9 @@ class AuthService:
     @staticmethod
     def _validate_auth_user(user: User, password: str):
         if not user:
-            raise NotFound
-        if user.password != password:
-            raise Unauthorized
+            raise NotFound("User not found")
+        if user.password != password:  # TODO: Заменить на хэш-проверку
+            raise Unauthorized("Invalid credentials")
 
     def generate_access_token(self, user_id: int) -> str:
         expires_date_unix = (datetime.datetime.now() + timedelta(days=7)).timestamp()
@@ -52,9 +52,7 @@ class AuthService:
                 algorithms=[settings.JWT_ENCODE_ALGORITHM],
             )
         except jwt.PyJWTError:
-            raise Unauthorized
-
+            raise Unauthorized("Invalid token")
         if payload["expire"] < datetime.datetime.now().timestamp():
-            raise Unauthorized
-
+            raise Unauthorized("Token expired")
         return payload["user_id"]

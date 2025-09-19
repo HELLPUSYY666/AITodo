@@ -12,3 +12,8 @@ class UserCreateSchema(BaseModel):
     username: str
     password: Optional[str] = None
     name: Optional[str] = None
+
+
+class LoginSchema(BaseModel):
+    username: str
+    password: str

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.dependency import get_auth_service
 from app.exceptions import NotFound, Unauthorized
-from app.schemas.users import UserCreateSchema, UserLoginSchema
+from app.schemas.users import LoginSchema, UserLoginSchema
 from app.services.auth import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login", response_model=UserLoginSchema)
 async def login(
-    body: UserCreateSchema,
+    body: LoginSchema,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ):
     try:

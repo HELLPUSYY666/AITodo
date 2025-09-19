@@ -22,6 +22,6 @@ class TaskSchema(BaseModel):
 
 class TaskCreateSchema(BaseModel):
     title: str
-    description: int | None = None
+    description: str | None = None
     priority: str
     due_date: dt.date

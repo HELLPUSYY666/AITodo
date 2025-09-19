@@ -1,9 +1,11 @@
+import inspect
+
 from fastapi import Depends, HTTPException, Security, security
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.cache.accesor import get_redis_connection
 from app.config import settings
-from app.db.connection import get_session
+from app.db.connection import SessionMakerDependency
 from app.exceptions import Unauthorized
 from app.repository.cache_task import TaskCacheRepository
 from app.repository.task import TaskRepository
@@ -14,9 +16,9 @@ from app.services.user import UserService
 
 
 async def get_task_repository(
-    session_maker: async_sessionmaker[AsyncSession] = Depends(get_session),
+    session_maker: SessionMakerDependency,
 ) -> TaskRepository:
-    return TaskRepository(session_maker)
+    return TaskRepository(session_maker=session_maker)
 
 
 async def get_task_cache_repository() -> TaskCacheRepository:
@@ -32,9 +34,9 @@ def get_task_service(
 
 
 def get_user_repository(
-    session_maker: async_sessionmaker[AsyncSession] = Depends(get_session),
+    session_maker: SessionMakerDependency,
 ) -> UserRepository:
-    return UserRepository(session_maker)
+    return UserRepository(session_maker=session_maker)
 
 
 def get_auth_service(
@@ -62,8 +64,6 @@ def get_request_user_id(
 ) -> int:
     try:
         user_id = auth_service.get_user_id_from_access_token(token.credentials)
-    except Unauthorized as e:
-        raise HTTPException(status_code=401, detail=e.detail)
     except Unauthorized as e:
         raise HTTPException(status_code=401, detail=e.detail)
     return user_id
