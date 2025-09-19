@@ -17,7 +17,7 @@ from app.schemas.users import UserLoginSchema
 @dataclass
 class AuthService:
     user_repository: UserRepository
-    settings: settings
+    settings: settings  # type: ignore
 
     async def login(self, username: str, password: str) -> UserLoginSchema:
         user = await self.user_repository.get_user_by_username(username)

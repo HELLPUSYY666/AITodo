@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 
 import redis.asyncio as redis
 
@@ -17,9 +17,26 @@ class TaskCacheRepository:
         return [TaskSchema.model_validate(task) for task in json.loads(tasks_json)]
 
     async def set_all_tasks(
-        self, tasks: list[TaskSchema], key: str = "all_tasks"
+        self, tasks: List[TaskSchema], key: str = "all_tasks"
     ) -> None:
-        tasks_json = json.dumps(
-            [task.model_dump() for task in tasks], ensure_ascii=False
+        await self.cache_session.set(
+            key, json.dumps([task.model_dump() for task in tasks])
         )
-        await self.cache_session.set(key, tasks_json, ex=60)
+
+    async def get_task(self, task_id: int) -> Optional[TaskSchema]:
+        key = f"task:{task_id}"
+        task_json = await self.cache_session.get(key)
+        if task_json is None:
+            return None
+        return TaskSchema.model_validate(json.loads(task_json))
+
+    async def set_task(self, task: TaskSchema, task_id: int) -> None:
+        key = f"task:{task_id}"
+        await self.cache_session.set(key, json.dumps(task.model_dump()))
+
+    async def delete_task_cache(self, task_id: int) -> None:
+        key = f"task:{task_id}"
+        await self.cache_session.delete(key)
+
+    async def invalidate_all_tasks(self) -> None:
+        await self.cache_session.delete("all_tasks")

@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -10,10 +10,19 @@ from app.services.task import TaskService
 router = APIRouter(prefix="/task", tags=["tasks"])
 
 
-@router.get("/all", response_model=list[TaskSchema])
-async def get_task(task_service: Annotated[TaskService, Depends(get_task_service)]):
-    tasks = await task_service.get_tasks()
-    return [TaskSchema.model_validate(task) for task in tasks]
+@router.get("/all", response_model=List[TaskSchema])
+async def get_all_tasks(
+    task_service: Annotated[TaskService, Depends(get_task_service)],
+):
+    return await task_service.get_tasks()
+
+
+@router.get("/{task_id}", response_model=TaskSchema)
+async def get_task_by_id(
+    task_id: int,
+    task_service: Annotated[TaskService, Depends(get_task_service)],
+):
+    return await task_service.get_task(task_id)
 
 
 @router.post("/task", response_model=TaskSchema)
