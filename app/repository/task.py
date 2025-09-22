@@ -10,9 +10,9 @@ class TaskRepository:
     def __init__(self, session_maker: async_sessionmaker[AsyncSession]):
         self.session_maker = session_maker
 
-    async def get_tasks(self) -> list[Task]:
+    async def get_tasks(self, user_id: int) -> list[Task]:
         async with self.session_maker() as session:
-            result = await session.execute(select(Task))
+            result = await session.execute(select(Task).where(Task.user_id == user_id))
             return result.scalars().all()
 
     async def get_task_by_id(self, task_id: int) -> Task | None:
@@ -24,7 +24,7 @@ class TaskRepository:
         task_model = Task(
             title=task.title,
             description=task.description,
-            status=task.priority,
+            priority=task.priority,
             due_date=task.due_date,
             user_id=user_id,
         )

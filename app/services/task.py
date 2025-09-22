@@ -12,22 +12,22 @@ class TaskService:
     task_repository: TaskRepository
     task_cache: TaskCacheRepository
 
-    async def get_tasks(self) -> List[TaskSchema]:
-        tasks = await self.task_cache.get_all_tasks()
+    async def get_tasks(self, user_id: int) -> List[TaskSchema]:
+        tasks = await self.task_cache.get_all_tasks(user_id=user_id)
         if tasks:
             return tasks
-        tasks = await self.task_repository.get_tasks()
+        tasks = await self.task_repository.get_tasks(user_id=user_id)
         if tasks:
             task_schemas = [TaskSchema.model_validate(task.__dict__) for task in tasks]
             await self.task_cache.set_all_tasks(task_schemas)
             return task_schemas
         return []
 
-    async def get_task(self, task_id: int) -> TaskSchema:
+    async def get_task(self, task_id: int, user_id: int) -> TaskSchema:
         task = await self.task_cache.get_task(task_id)
         if task:
             return task
-        task = await self.task_repository.get_user_task(task_id, user_id=1)
+        task = await self.task_repository.get_user_task(task_id, user_id=user_id)
         if not task:
             raise NotFound(model_name="Task", ident=task_id)
         task_schema = TaskSchema.model_validate(task.__dict__)

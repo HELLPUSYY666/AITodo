@@ -13,16 +13,18 @@ router = APIRouter(prefix="/task", tags=["tasks"])
 @router.get("/all", response_model=List[TaskSchema])
 async def get_all_tasks(
     task_service: Annotated[TaskService, Depends(get_task_service)],
+    user_id: int = Depends(get_request_user_id),
 ):
-    return await task_service.get_tasks()
+    return await task_service.get_tasks(user_id=user_id)
 
 
 @router.get("/{task_id}", response_model=TaskSchema)
 async def get_task_by_id(
     task_id: int,
     task_service: Annotated[TaskService, Depends(get_task_service)],
+    user_id: int = Depends(get_request_user_id),
 ):
-    return await task_service.get_task(task_id)
+    return await task_service.get_task(task_id, user_id=user_id)
 
 
 @router.post("/task", response_model=TaskSchema)

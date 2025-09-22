@@ -1,4 +1,5 @@
 import datetime as dt
+import enum
 
 from pydantic import BaseModel, model_validator
 

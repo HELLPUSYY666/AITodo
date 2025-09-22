@@ -10,11 +10,15 @@ class TaskCacheRepository:
     def __init__(self, cache_session: redis.Redis) -> None:
         self.cache_session = cache_session
 
-    async def get_all_tasks(self, key: str = "all_tasks") -> List[TaskSchema]:
+    async def get_all_tasks(
+        self, user_id: int, key: str = "all_tasks"
+    ) -> List[TaskSchema]:
         tasks_json = await self.cache_session.get(key)
         if tasks_json is None:
             return []
-        return [TaskSchema.model_validate(task) for task in json.loads(tasks_json)]
+        parsed = json.loads(tasks_json)
+        filtered = [task for task in parsed if task.get("user_id") == user_id]
+        return [TaskSchema.model_validate(task) for task in filtered]
 
     async def set_all_tasks(
         self, tasks: List[TaskSchema], key: str = "all_tasks", ex: int = 3600
